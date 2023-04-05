@@ -1,0 +1,45 @@
+name: CI Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["CI Scan"]
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Release
+        id: release_output
+        uses: go-semantic-release/action@v1
+        with:
+          changelog-generator-opt: "emojis=true"
+          changelog-file: "CHANGELOG.md"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          echo "Version: ${{ steps.release_output.outputs.version }}"
+          echo "Major Version: ${{ steps.release_output.outputs.version_major }}"
+          echo "Minor Version: ${{ steps.release_output.outputs.version_minor }}"
+          echo "Patch Version: ${{ steps.release_output.outputs.version_patch }}"
+          echo "Changelog: ${{ steps.release_output.outputs.changelog }}"
+
+      - name: Publish to pkg.go.dev
+        run: GOPROXY=proxy.golang.org go list -m github.com/imusmanmalik/randomizer@${{ steps.release_output.outputs.version }}
