@@ -43,4 +43,4 @@ jobs:
 
       - name: Publish to pkg.go.dev
         if: steps.semrel.outputs.version != ''
-        run: GOPROXY=proxy.golang.org go list -m github.com/imusmanmalik/randomizer@${{ steps.semrel.outputs.version }}
+        run: GOPROXY=proxy.golang.org go list -m github.com/imusmanmalik/randomizer@v${{ steps.semrel.outputs.version }}
