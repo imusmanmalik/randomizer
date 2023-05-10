@@ -23,17 +23,26 @@ import (
 )
 
 func main() {
-    // Generate a random integer between 0 and 100
-    n := yourpackage.RandomInt(100)
-    fmt.Println(n)
+	// Generate a random integer between 1 and 100
+	randomInt, err := randomizer.RandomInt(1, 100)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(randomInt)
 
-    // Generate a random byte slice with 16 bytes
-    b := yourpackage.RandomBytes(16)
-    fmt.Printf("%x\n", b)
+	// Generate a random slice of bytes with length 16
+	randomBytes, err := randomizer.RandomBytes(16)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(randomBytes)
 
-    // Generate a random string with 10 characters
-    s := yourpackage.RandomString(10)
-    fmt.Println(s)
+	// Generate a random string with length 32
+	randomString, err := randomizer.RandomString(32)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(randomString)
 }
 ```
 
@@ -42,6 +51,7 @@ func main() {
 ```shell
 go test
 ```
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or have an idea for a new feature, please open an issue or submit a pull request on GitHub.
@@ -53,6 +63,3 @@ This library is licensed under Apache 2.0 License. See the [LICENSE file](https:
 ## Acknowledgments
 
 This library was inspired by the math/rand package in the Go standard library, and the github.com/Pallinder/go-randomdata library.
-
-
-

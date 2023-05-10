@@ -26,7 +26,7 @@ jobs:
           go-version: 1.20
 
       - name: Release
-        id: release_output
+        id: semrel
         uses: go-semantic-release/action@v1
         with:
           changelog-generator-opt: "emojis=true"
@@ -35,11 +35,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: |
-          echo "Version: ${{ steps.release_output.outputs.version }}"
-          echo "Major Version: ${{ steps.release_output.outputs.version_major }}"
-          echo "Minor Version: ${{ steps.release_output.outputs.version_minor }}"
-          echo "Patch Version: ${{ steps.release_output.outputs.version_patch }}"
-          echo "Changelog: ${{ steps.release_output.outputs.changelog }}"
+          echo "Version: ${{ steps.semrel.outputs.version }}"
+          echo "Major Version: ${{ steps.semrel.outputs.version_major }}"
+          echo "Minor Version: ${{ steps.semrel.outputs.version_minor }}"
+          echo "Patch Version: ${{ steps.semrel.outputs.version_patch }}"
+          echo "Changelog: ${{ steps.semrel.outputs.changelog }}"
 
       - name: Publish to pkg.go.dev
-        run: GOPROXY=proxy.golang.org go list -m github.com/imusmanmalik/randomizer@${{ steps.release_output.outputs.version }}
+        if: steps.semrel.outputs.version != ''
+        run: GOPROXY=proxy.golang.org go list -m github.com/imusmanmalik/randomizer@${{ steps.semrel.outputs.version }}

@@ -23,30 +23,44 @@ import (
 	"math/big"
 )
 
-// Generator is a struct that holds the random generator's configuration.
-type Generator struct {
-}
+// RandomInt generates a cryptographically secure random integer between min and max (inclusive)
+func RandomInt(min, max int64) (int64, error) {
+	// Create a new big.Int to hold the range of possible values
+	rangeSize := big.NewInt(max - min + 1)
 
-// NewGenerator returns a new instance of the random generator.
-func NewGenerator() *Generator {
-	return &Generator{}
-}
-
-// Intn returns a cryptographically secure random integer between 0 and n.
-func (g *Generator) Intn(n int) (int, error) {
-	max := big.NewInt(int64(n))
-	r, err := rand.Int(rand.Reader, max)
+	// Generate a cryptographically secure random value within the range
+	randomValue, err := rand.Int(rand.Reader, rangeSize)
 	if err != nil {
 		return 0, err
 	}
-	return int(r.Int64()), nil
+
+	// Convert the random value to an int64 and add the minimum value to shift the range
+	return randomValue.Int64() + min, nil
 }
 
-// Float64 returns a cryptographically secure random float64 between 0 and 1.
-func (g *Generator) Float64() (float64, error) {
-	r, err := rand.Int(rand.Reader, big.NewInt(1e17))
+// RandomBytes generates a slice of cryptographically secure random bytes with a given length
+func RandomBytes(length int) ([]byte, error) {
+	// Create a slice to hold the random bytes
+	randomBytes := make([]byte, length)
+
+	// Generate the random bytes using the crypto/rand package
+	_, err := rand.Read(randomBytes)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return float64(r.Int64()) / 1e17, nil
+
+	return randomBytes, nil
+}
+
+// RandomString generates a cryptographically secure random string with a given length
+func RandomString(length int) (string, error) {
+	// Generate a slice of random bytes with the given length
+	randomBytes, err := RandomBytes(length)
+	if err != nil {
+		return "", err
+	}
+
+	randomString := string(randomBytes)
+
+	return randomString, nil
 }
